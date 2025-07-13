@@ -11,7 +11,7 @@ main :: proc() {
 	SCREEN_HEIGHT :: 450
 	TARGET_FPS :: 60
 	// Physics constants
-	GRAVITY :: 1
+	GRAVITY :: 10
 	// Entity constants
 
 
@@ -29,11 +29,13 @@ main :: proc() {
 	defer delete(tag_map)
 
 	ecs: entity.EntityComponentSystem
+	ecs.boundry = rl.Vector2{SCREEN_WIDTH, SCREEN_HEIGHT}
+	ecs.gravity = GRAVITY
 	ecs.tag_map = tag_map
 	e := entity.get_entity(&ecs, "scarfy")
 	player := entity.Animation {
 		texture = &player_texture,
-		frame = rl.Rectangle {
+		frame_box = rl.Rectangle {
 			x = 0,
 			y = 0,
 			width = f32(player_texture.width) / 6,
@@ -43,13 +45,16 @@ main :: proc() {
 		n_row = 1,
 		i_row = 0,
 		i_col = 0,
+		continuous = true,
+		finished = false,
 		frame_time = 0.0,
-		frame_duration = 1 / 6,
+		frame_duration = 0.25,
 	}
-	ecs.position = rl.Vector2 {
+	ecs.position[e] = rl.Vector2 {
 		f32(SCREEN_WIDTH) / 2 - player.frame.width / 2,
 		f32(SCREEN_HEIGHT) - player.frame.height,
 	}
+	ecs.speed[e] = rl.Vector2{100, 100}
 	ecs.animation[e] = player
 
 
@@ -64,7 +69,4 @@ main :: proc() {
 		entity.animate(&ecs)
 		rl.EndDrawing()
 	}
-
-	// Cleanup
-	rl.CloseWindow()
 }
