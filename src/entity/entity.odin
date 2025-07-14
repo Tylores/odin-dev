@@ -37,18 +37,16 @@ handle_input :: proc(using ecs: ^EntityComponentSystem) {
 	e := tag_map["scarfy"]
 	if rl.IsKeyDown(rl.KeyboardKey.RIGHT) {
 		velocity[e].x = speed[e].x
-		if animation[e].frame_box.width < 0 {
-			animation[e].frame_box.width *= -1
-		}
+		animation[e].direction = Direction.East
 	} else if rl.IsKeyDown(rl.KeyboardKey.LEFT) {
 		velocity[e].x = -speed[e].x
-		if animation[e].frame_box.width > 0 {
-			animation[e].frame_box.width *= -1
-		}
-	} else if rl.IsKeyPressed(.SPACE) && grounded[e] {
-		velocity[e].y = -speed[e].y
+		animation[e].direction = Direction.West
 	} else {
-		velocity[e].x = 0
+		velocity[e].x = -1
+		animation[e].direction = Direction.Idle
+	}
+	if rl.IsKeyPressed(.SPACE) && grounded[e] {
+		velocity[e].y = -speed[e].y
 	}
 }
 
